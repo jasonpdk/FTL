@@ -1789,7 +1789,7 @@ void log_query(unsigned int flags, char *name, struct all_addr *addr, char *arg)
       else
 	{
 #ifdef HAVE_IPV6
-	  inet_ntop(flags & F_IPV4 ? AF_INET : AF_INET6,
+	  inet_ntop(flags & F_IPV6 ? AF_INET6 : AF_INET,
 		    addr, daemon->addrbuff, ADDRSTRLEN);
 #else
 	  strncpy(daemon->addrbuff, inet_ntoa(addr->addr.addr4), ADDRSTRLEN);
