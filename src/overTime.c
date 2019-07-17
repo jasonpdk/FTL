@@ -182,6 +182,22 @@ void moveOverTimeMemory(const time_t mintime)
 			        remainingSlots*sizeof(int));
 		}
 
+		// Display overTime memory details after having moved everything
+		if(config.debug & DEBUG_OVERTIME)
+		{
+			logg("moveOverTimeMemory(): Before iteration");
+
+			// Loop over all overTime entries
+			for(unsigned int timeidx = 0; timeidx < OVERTIME_SLOTS ; timeidx++)
+			{
+				char timestring[84] = "";
+				get_timestr(timestring, overTime[timeidx].timestamp);
+				logg("%03d = %ld (%s)", timeidx, overTime[timeidx].timestamp, timestring);
+			}
+
+			logg("--------------------------------------");
+		}
+
 		// Iterate over new overTime region and initialize it
 		for(unsigned int timeidx = remainingSlots; timeidx < OVERTIME_SLOTS ; timeidx++)
 		{
@@ -189,5 +205,22 @@ void moveOverTimeMemory(const time_t mintime)
 			const time_t timestamp = overTime[timeidx-1].timestamp + OVERTIME_INTERVAL;
 			initSlot(timeidx, timestamp);
 		}
+
+		// Display overTime memory details after having initialized
+		if(config.debug & DEBUG_OVERTIME)
+		{
+			logg("moveOverTimeMemory(): After iteration");
+
+			// Loop over all overTime entries
+			for(unsigned int timeidx = 0; timeidx < OVERTIME_SLOTS ; timeidx++)
+			{
+				char timestring[84] = "";
+				get_timestr(timestring, overTime[timeidx].timestamp);
+				logg("%03d = %ld (%s)", timeidx, overTime[timeidx].timestamp, timestring);
+			}
+
+			logg("-------------------------------------");
+		}
+
 	}
 }
