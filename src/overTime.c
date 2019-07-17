@@ -150,6 +150,22 @@ void moveOverTimeMemory(const time_t mintime)
 			     moveOverTime, moveOverTime+remainingSlots, remainingSlots);
 		}
 
+		// Display overTime memory details before having moved everything
+		if(config.debug & DEBUG_OVERTIME)
+		{
+			logg("moveOverTimeMemory(): Before move");
+
+			// Loop over all overTime entries
+			for(unsigned int timeidx = 0; timeidx < OVERTIME_SLOTS ; timeidx++)
+			{
+				char timestring[84] = "";
+				get_timestr(timestring, overTime[timeidx].timestamp);
+				logg("%03d = %ld (%s)", timeidx, overTime[timeidx].timestamp, timestring);
+			}
+
+			logg("--------------------------------------");
+		}
+
 		// Move overTime memory forward to update data structure
 		memmove(&overTime[0],
 		        &overTime[moveOverTime],
@@ -185,7 +201,7 @@ void moveOverTimeMemory(const time_t mintime)
 		// Display overTime memory details after having moved everything
 		if(config.debug & DEBUG_OVERTIME)
 		{
-			logg("moveOverTimeMemory(): Before iteration");
+			logg("moveOverTimeMemory(): After move, before iteration");
 
 			// Loop over all overTime entries
 			for(unsigned int timeidx = 0; timeidx < OVERTIME_SLOTS ; timeidx++)
