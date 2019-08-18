@@ -11,6 +11,8 @@
 #include "FTL.h"
 #include "shmem.h"
 #include "sqlite3.h"
+#include <curl/curl.h>
+#include <string.h>
 
 static sqlite3 *db;
 bool database = false;
@@ -491,10 +493,37 @@ void save_to_DB(void)
 
 		// DOMAIN
 		const char *domain = getDomainString(i);
-		sqlite3_bind_text(stmt, 4, domain, -1, SQLITE_TRANSIENT);
 
 		// CLIENT
 		const char *client = getClientIPString(i);
+
+		CURL *curl;
+		CURLcode res;
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl = curl_easy_init();
+
+		char param[1000] = "url=";
+		strcat(param, domain);
+		strcat(param, "&request_ip=");
+		strcat(param, client);
+
+		if(curl) {
+			curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.41.95/categorise.php");
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, param);
+			/* Perform the request, res will get the return code */
+			res = curl_easy_perform(curl);
+			/* Check for errors */
+			if(res != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+			/* always cleanup */
+			curl_easy_cleanup(curl);
+		}
+		curl_global_cleanup();
+
+		sqlite3_bind_text(stmt, 4, domain, -1, SQLITE_TRANSIENT);
+
+		// BIND CLIENT
 		sqlite3_bind_text(stmt, 5, client, -1, SQLITE_TRANSIENT);
 
 		// FORWARD
